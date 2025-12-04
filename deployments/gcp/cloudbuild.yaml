@@ -1,41 +1,36 @@
 # Google Cloud Build Configuration for Educational Support AI System
 #
-# NOTE: Before running this build, create the Cloud Run service first:
-#   gcloud run deploy edu-support-ai-system --image gcr.io/$PROJECT_ID/edu-support-ai-system:latest \
-#     --region us-central1 --platform managed --allow-unauthenticated --port 8000
+# This configuration will automatically:
+# - Build the Docker image
+# - Push to Artifact Registry
+# - Deploy to Cloud Run (updates existing service)
 #
-# After initial creation, this build will update the existing service automatically.
+# IMPORTANT: Create the Cloud Run service first before running this build:
+#   gcloud run deploy edu-support-ai-system --image us-central1-docker.pkg.dev/YOUR_PROJECT_ID/cloud-run-source-deploy/edu_rag_app/edu-support-ai-system:latest \
+#     --region us-central1 --platform managed --allow-unauthenticated --port 8000
 
-# Build the Docker image and push to Google Container Registry
 steps:
   # Step 1: Build the Docker image
-  - name: "gcr.io/cloud-builders/docker"
+  - name: gcr.io/cloud-builders/docker
     args:
-      - "build"
+      - build
+      - "--no-cache"
       - "-t"
-      - "gcr.io/$PROJECT_ID/edu-support-ai-system:$COMMIT_SHA"
-      - "-t"
-      - "gcr.io/$PROJECT_ID/edu-support-ai-system:latest"
+      - "$_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA"
+      - "."
       - "-f"
       - "deployments/docker/Dockerfile"
-      - "."
-    id: "build-image"
+    id: Build
+    timeout: "1200s"
 
-  # Step 2: Push the Docker image to GCR
-  - name: "gcr.io/cloud-builders/docker"
+  # Step 2: Push the Docker image to Artifact Registry
+  - name: gcr.io/cloud-builders/docker
     args:
-      - "push"
-      - "gcr.io/$PROJECT_ID/edu-support-ai-system:$COMMIT_SHA"
-    id: "push-image-sha"
+      - push
+      - "$_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA"
+    id: Push
 
-  # Step 3: Push the latest tag
-  - name: "gcr.io/cloud-builders/docker"
-    args:
-      - "push"
-      - "gcr.io/$PROJECT_ID/edu-support-ai-system:latest"
-    id: "push-image-latest"
-
-  # Step 4: Deploy to Cloud Run
+  # Step 3: Deploy to Cloud Run (updates existing service)
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
     args:
       - run
@@ -43,29 +38,37 @@ steps:
       - update
       - $_SERVICE_NAME
       - "--platform=managed"
-      - "--image=gcr.io/$PROJECT_ID/edu-support-ai-system:$COMMIT_SHA"
+      - "--image=$_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA"
       - "--labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID"
-      - "--region=$_REGION"
-      - "--port=8000"
-      - "--update-env-vars=API_HOST=0.0.0.0,API_PORT=8000,CORS_ORIGINS=*,SESSION_EXPIRATION_SECONDS=3600,ALLOW_ALL_API_KEYS=false"
+      - "--region=$_DEPLOY_REGION"
       - "--quiet"
     id: Deploy
     entrypoint: gcloud
 
-# Images to be pushed to Google Container Registry
+# Images to be pushed to Artifact Registry
 images:
-  - "gcr.io/$PROJECT_ID/edu-support-ai-system:$COMMIT_SHA"
-  - "gcr.io/$PROJECT_ID/edu-support-ai-system:latest"
+  - "$_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA"
 
 # Build options
 options:
+  substitutionOption: ALLOW_LOOSE
   logging: CLOUD_LOGGING_ONLY
-  machineType: "N1_HIGHCPU_8"
+  machineType: "E2_HIGHCPU_8"
+
+# Substitutions - Update these with your project values
+substitutions:
+  _AR_HOSTNAME: "us-central1-docker.pkg.dev" # Change to your region (e.g., europe-west1-docker.pkg.dev)
+  _AR_REPOSITORY: "cloud-run-source-deploy" # Your Artifact Registry repository name
+  _AR_PROJECT_ID: "YOUR_PROJECT_ID" # Your GCP project ID (e.g., edusupport-b89a4)
+  _PLATFORM: "managed"
+  _SERVICE_NAME: "edu-support-ai-system" # Cloud Run service name
+  _DEPLOY_REGION: "us-central1" # Deployment region (e.g., europe-west1)
+
+# Tags for organizing builds
+tags:
+  - gcp-cloud-build-deploy-cloud-run
+  - gcp-cloud-build-deploy-cloud-run-managed
+  - edu-support-ai-system
 
 # Timeout for the entire build
-timeout: "1200s"
-
-# Substitutions (can be overridden)
-substitutions:
-  _REGION: "us-central1"
-  _SERVICE_NAME: "edu-support-ai-system"
+timeout: "1800s"
