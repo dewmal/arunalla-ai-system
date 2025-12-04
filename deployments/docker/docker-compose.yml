@@ -31,6 +31,11 @@ services:
       # Database Configuration
       - DATABASE_URL=postgresql://${DB_USER:-eduai}:${DB_PASSWORD:-changeme}@db:5432/${DB_NAME:-eduai_db}
     
+    # Load environment variables from .env file (optional)
+    # Create a .env file in this directory or use environment variables directly
+    env_file:
+      - .env
+    
     # Optional: Mount volume for development with hot reload
     volumes:
       - ../../src:/app/src:ro
