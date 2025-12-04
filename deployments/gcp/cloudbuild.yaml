@@ -30,24 +30,24 @@ steps:
     id: "push-image-latest"
 
   # Step 4: Deploy to Cloud Run (optional - uncomment to enable)
-  # - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  #   entrypoint: gcloud
-  #   args:
-  #     - 'run'
-  #     - 'deploy'
-  #     - 'edu-support-ai-system'
-  #     - '--image'
-  #     - 'gcr.io/$PROJECT_ID/edu-support-ai-system:$COMMIT_SHA'
-  #     - '--region'
-  #     - 'us-central1'
-  #     - '--platform'
-  #     - 'managed'
-  #     - '--allow-unauthenticated'
-  #     - '--port'
-  #     - '8000'
-  #     - '--set-env-vars'
-  #     - 'API_HOST=0.0.0.0,API_PORT=8000,CORS_ORIGINS=*'
-  #   id: 'deploy-cloud-run'
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      - "run"
+      - "deploy"
+      - "edu-support-ai-system"
+      - "--image"
+      - "gcr.io/$PROJECT_ID/edu-support-ai-system:$COMMIT_SHA"
+      - "--region"
+      - "us-central1"
+      - "--platform"
+      - "managed"
+      - "--allow-unauthenticated"
+      - "--port"
+      - "8000"
+      - "--set-env-vars"
+      - "API_HOST=0.0.0.0,API_PORT=8000,CORS_ORIGINS=*"
+    id: "deploy-cloud-run"
 
 # Images to be pushed to Google Container Registry
 images:
