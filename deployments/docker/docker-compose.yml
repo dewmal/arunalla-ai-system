@@ -24,6 +24,12 @@ services:
       
       # Development Settings
       - ALLOW_ALL_API_KEYS=${ALLOW_ALL_API_KEYS:-true}
+      
+      # API Key Configuration
+      - VALID_API_KEYS=${VALID_API_KEYS:-demo-key-123,test-key-456,dev-key-789}
+      
+      # Database Configuration
+      - DATABASE_URL=postgresql://${DB_USER:-eduai}:${DB_PASSWORD:-changeme}@db:5432/${DB_NAME:-eduai_db}
     
     # Optional: Mount volume for development with hot reload
     volumes:
@@ -31,6 +37,11 @@ services:
     
     # Restart policy
     restart: unless-stopped
+    
+    # Depends on database
+    depends_on:
+      db:
+        condition: service_healthy
     
     # Health check
     healthcheck:
@@ -44,25 +55,30 @@ services:
     networks:
       - edu-ai-network
 
-  # Optional: Add a database service if needed in the future
-  # db:
-  #   image: postgres:15-alpine
-  #   container_name: edu-support-db
-  #   environment:
-  #     - POSTGRES_USER=${DB_USER:-eduai}
-  #     - POSTGRES_PASSWORD=${DB_PASSWORD:-changeme}
-  #     - POSTGRES_DB=${DB_NAME:-eduai_db}
-  #   ports:
-  #     - "${DB_PORT:-5432}:5432"
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-  #   networks:
-  #     - edu-ai-network
-  #   restart: unless-stopped
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: edu-support-db
+    environment:
+      - POSTGRES_USER=${DB_USER:-eduai}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-changeme}
+      - POSTGRES_DB=${DB_NAME:-eduai_db}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - edu-ai-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-eduai} -d ${DB_NAME:-eduai_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   edu-ai-network:
     driver: bridge
 
-# volumes:
-#   postgres_data:
+volumes:
+  postgres_data:

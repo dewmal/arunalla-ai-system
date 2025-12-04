@@ -62,7 +62,9 @@ docker-compose up -d
 
 ## Configuration
 
-Environment variables can be configured in `.env` file:
+Environment variables can be configured in `.env` file (copy from `.env.example`):
+
+### Server Configuration
 
 - `API_HOST` - Server host (default: 0.0.0.0)
 - `API_PORT` - Server port (default: 8000)
@@ -70,7 +72,109 @@ Environment variables can be configured in `.env` file:
 - `SESSION_EXPIRATION_SECONDS` - Session timeout (default: 3600)
 - `DEFAULT_PAGE_SIZE` - Default pagination size (default: 20)
 - `MAX_PAGE_SIZE` - Maximum pagination size (default: 100)
-- `ALLOW_ALL_API_KEYS` - Allow any API key for development (default: true)
+
+### API Key Configuration
+
+- `ALLOW_ALL_API_KEYS` - Allow any API key for development (default: `true`)
+  - Set to `false` in production to enforce API key validation
+- `VALID_API_KEYS` - Comma-separated list of valid API keys (default: `demo-key-123,test-key-456,dev-key-789`)
+  - Example: `VALID_API_KEYS=your-key-1,your-key-2,your-key-3`
+  - Only used when `ALLOW_ALL_API_KEYS=false`
+  - **⚠️ Important:** Use strong, unique keys in production!
+
+**Creating API Keys:**
+
+```bash
+# Generate a secure random API key (Linux/Mac)
+openssl rand -hex 32
+
+# Or use Python
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+
+# Add to .env file
+VALID_API_KEYS=key1,key2,key3
+ALLOW_ALL_API_KEYS=false
+```
+
+### Database Configuration
+
+- `DATABASE_URL` - PostgreSQL connection string (optional, defaults to in-memory storage)
+  - Format: `postgresql://username:password@host:port/database`
+  - Example: `postgresql://eduai:changeme@localhost:5432/eduai_db`
+- `DB_USER` - Database username (default: eduai)
+- `DB_PASSWORD` - Database password (default: changeme) ⚠️ **Change in production!**
+- `DB_NAME` - Database name (default: eduai_db)
+- `DB_PORT` - Database port (default: 5432)
+
+**Note:** If `DATABASE_URL` is not set, the application will use in-memory storage. Data will be lost when the application restarts.
+
+## Database Setup
+
+### With Docker Compose (Recommended)
+
+PostgreSQL is automatically included in the Docker Compose setup:
+
+```bash
+# Start both API and PostgreSQL
+cd deployments/docker
+docker-compose up -d
+
+# Verify PostgreSQL is running
+docker-compose logs db
+
+# Initialize database (tables are created automatically on first run)
+# Or manually:
+docker-compose exec api python -m edu_support_ai_system.init_db
+```
+
+### Local PostgreSQL
+
+If running the API locally (not in Docker), you'll need a PostgreSQL instance:
+
+```bash
+# 1. Install and start PostgreSQL (or use Docker for just the database)
+docker run -d \
+  --name edu-support-db \
+  -e POSTGRES_USER=eduai \
+  -e POSTGRES_PASSWORD=changeme \
+  -e POSTGRES_DB=eduai_db \
+  -p 5432:5432 \
+  postgres:15-alpine
+
+# 2. Set DATABASE_URL in your environment
+export DATABASE_URL="postgresql://eduai:changeme@localhost:5432/eduai_db"
+
+# 3. Run the application
+uv run edu-support-ai-system
+```
+
+### Troubleshooting Database Connection
+
+If you encounter database connection issues:
+
+1. **Check PostgreSQL is running:**
+
+   ```bash
+   docker-compose logs db
+   ```
+
+2. **Verify DATABASE_URL is set correctly:**
+
+   ```bash
+   docker-compose exec api env | grep DATABASE_URL
+   ```
+
+3. **Check application logs:**
+
+   ```bash
+   docker-compose logs api
+   # Look for "✓ Using PostgreSQL database backend"
+   ```
+
+4. **Manually initialize database:**
+   ```bash
+   docker-compose exec api python -m edu_support_ai_system.init_db
+   ```
 
 ## License
 

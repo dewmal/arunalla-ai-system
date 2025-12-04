@@ -128,5 +128,33 @@ class MessageStore:
 
 
 # Global instances
-session_store = SessionStore()
-message_store = MessageStore()
+# Choose between PostgreSQL and in-memory storage based on configuration
+from .config import settings
+
+if settings.DATABASE_URL:
+    # Use PostgreSQL backend
+    try:
+        from .database_pg import (
+            SessionStore as PgSessionStore,
+            MessageStore as PgMessageStore,
+            init_db
+        )
+        
+        # Initialize database
+        init_db(settings.DATABASE_URL)
+        
+        # Create instances
+        session_store = PgSessionStore()
+        message_store = PgMessageStore()
+        
+        print(f"✓ Using PostgreSQL database backend")
+    except Exception as e:
+        print(f"⚠ Failed to initialize PostgreSQL backend: {e}")
+        print("⚠ Falling back to in-memory storage")
+        session_store = SessionStore()
+        message_store = MessageStore()
+else:
+    # Use in-memory backend
+    session_store = SessionStore()
+    message_store = MessageStore()
+    print(f"✓ Using in-memory database backend")
