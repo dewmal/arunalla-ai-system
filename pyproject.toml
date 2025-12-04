@@ -12,10 +12,12 @@ dependencies = [
     "sqlalchemy>=2.0.0",
     "psycopg2-binary>=2.9.0",
     "alembic>=1.13.0",
+    "ceylonai-next==0.2.5",
 ]
 
 [project.scripts]
 edu-support-ai-system = "edu_support_ai_system.__main__:main"
+agent-mesh = "agent_mesh.__main__:main"
 
 [tool.setuptools]
 package-dir = { "" = "src" }
