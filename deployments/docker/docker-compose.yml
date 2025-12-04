@@ -1,0 +1,68 @@
+services:
+  # FastAPI Application
+  api:
+    build:
+      context: ../../
+      dockerfile: deployments/docker/Dockerfile
+    container_name: edu-support-ai-system
+    ports:
+      - "${API_PORT:-8000}:8000"
+    environment:
+      # Server Configuration
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      
+      # CORS Configuration
+      - CORS_ORIGINS=${CORS_ORIGINS:-*}
+      
+      # Session Configuration
+      - SESSION_EXPIRATION_SECONDS=${SESSION_EXPIRATION_SECONDS:-3600}
+      
+      # Pagination Configuration
+      - DEFAULT_PAGE_SIZE=${DEFAULT_PAGE_SIZE:-20}
+      - MAX_PAGE_SIZE=${MAX_PAGE_SIZE:-100}
+      
+      # Development Settings
+      - ALLOW_ALL_API_KEYS=${ALLOW_ALL_API_KEYS:-true}
+    
+    # Optional: Mount volume for development with hot reload
+    volumes:
+      - ../../src:/app/src:ro
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    
+    # Network
+    networks:
+      - edu-ai-network
+
+  # Optional: Add a database service if needed in the future
+  # db:
+  #   image: postgres:15-alpine
+  #   container_name: edu-support-db
+  #   environment:
+  #     - POSTGRES_USER=${DB_USER:-eduai}
+  #     - POSTGRES_PASSWORD=${DB_PASSWORD:-changeme}
+  #     - POSTGRES_DB=${DB_NAME:-eduai_db}
+  #   ports:
+  #     - "${DB_PORT:-5432}:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - edu-ai-network
+  #   restart: unless-stopped
+
+networks:
+  edu-ai-network:
+    driver: bridge
+
+# volumes:
+#   postgres_data:
