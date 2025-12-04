@@ -1,0 +1,39 @@
+# Cloud Run service configuration
+service: edu-support-ai-system
+
+runtime: custom
+
+# Environment variables
+env_variables:
+  API_HOST: "0.0.0.0"
+  API_PORT: "8080"
+  CORS_ORIGINS: "*"
+  SESSION_EXPIRATION_SECONDS: "3600"
+  DEFAULT_PAGE_SIZE: "20"
+  MAX_PAGE_SIZE: "100"
+  ALLOW_ALL_API_KEYS: "false"
+
+# Automatic scaling configuration
+automatic_scaling:
+  min_instances: 0
+  max_instances: 10
+  target_cpu_utilization: 0.7
+  target_concurrent_requests: 80
+
+# Resource configuration
+resources:
+  cpu: 1
+  memory_gb: 0.5
+
+# Health check
+liveness_check:
+  path: "/health"
+  check_interval_sec: 30
+  timeout_sec: 10
+  failure_threshold: 3
+
+readiness_check:
+  path: "/health"
+  check_interval_sec: 10
+  timeout_sec: 10
+  failure_threshold: 3

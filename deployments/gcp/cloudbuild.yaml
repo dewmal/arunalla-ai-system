@@ -1,0 +1,68 @@
+# Google Cloud Build Configuration for Educational Support AI System
+
+# Build the Docker image and push to Google Container Registry
+steps:
+  # Step 1: Build the Docker image
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/edu-support-ai-system:$COMMIT_SHA"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/edu-support-ai-system:latest"
+      - "-f"
+      - "deployments/docker/Dockerfile"
+      - "."
+    id: "build-image"
+
+  # Step 2: Push the Docker image to GCR
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "push"
+      - "gcr.io/$PROJECT_ID/edu-support-ai-system:$COMMIT_SHA"
+    id: "push-image-sha"
+
+  # Step 3: Push the latest tag
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "push"
+      - "gcr.io/$PROJECT_ID/edu-support-ai-system:latest"
+    id: "push-image-latest"
+
+  # Step 4: Deploy to Cloud Run (optional - uncomment to enable)
+  # - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  #   entrypoint: gcloud
+  #   args:
+  #     - 'run'
+  #     - 'deploy'
+  #     - 'edu-support-ai-system'
+  #     - '--image'
+  #     - 'gcr.io/$PROJECT_ID/edu-support-ai-system:$COMMIT_SHA'
+  #     - '--region'
+  #     - 'us-central1'
+  #     - '--platform'
+  #     - 'managed'
+  #     - '--allow-unauthenticated'
+  #     - '--port'
+  #     - '8000'
+  #     - '--set-env-vars'
+  #     - 'API_HOST=0.0.0.0,API_PORT=8000,CORS_ORIGINS=*'
+  #   id: 'deploy-cloud-run'
+
+# Images to be pushed to Google Container Registry
+images:
+  - "gcr.io/$PROJECT_ID/edu-support-ai-system:$COMMIT_SHA"
+  - "gcr.io/$PROJECT_ID/edu-support-ai-system:latest"
+
+# Build options
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: "N1_HIGHCPU_8"
+
+# Timeout for the entire build
+timeout: "1200s"
+
+# Substitutions (can be overridden)
+substitutions:
+  _REGION: "us-central1"
+  _SERVICE_NAME: "edu-support-ai-system"

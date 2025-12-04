@@ -25,6 +25,32 @@ See [docker/DOCKER.md](docker/DOCKER.md) for detailed instructions.
 
 ---
 
+### Google Cloud Platform (GCP)
+
+The `gcp` directory contains:
+
+- **cloudbuild.yaml**: Cloud Build CI/CD pipeline configuration
+- **app.yaml**: Cloud Run service configuration
+- **.gcloudignore**: Files to exclude from GCP deployments
+- **README.md**: Comprehensive GCP deployment documentation
+
+**Quick Start**:
+
+```bash
+# Build and push to GCR
+gcloud builds submit --config deployments/gcp/cloudbuild.yaml
+
+# Deploy to Cloud Run
+gcloud run deploy edu-support-ai-system \
+  --image gcr.io/YOUR_PROJECT_ID/edu-support-ai-system:latest \
+  --platform managed \
+  --region us-central1
+```
+
+See [gcp/README.md](gcp/README.md) for detailed instructions.
+
+---
+
 ## Deployment Recommendations
 
 ### Development
@@ -58,10 +84,15 @@ To add new deployment configurations (e.g., Kubernetes, AWS Lambda):
 ```
 deployments/
 ├── README.md          # This file
-└── docker/            # Docker deployment
-    ├── Dockerfile
-    ├── docker-compose.yml
-    ├── .dockerignore
-    ├── .env.example
-    └── DOCKER.md
+├── docker/            # Docker deployment
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   ├── .dockerignore
+│   ├── .env.example
+│   └── DOCKER.md
+└── gcp/               # Google Cloud Platform deployment
+    ├── cloudbuild.yaml
+    ├── app.yaml
+    ├── .gcloudignore
+    └── README.md
 ```
