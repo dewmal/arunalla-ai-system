@@ -29,6 +29,26 @@ This directory contains configuration files for deploying the Educational Suppor
 
 ---
 
+## ⚠️ Important: Initial Service Creation
+
+The `cloudbuild.yaml` uses `gcloud run services update` which requires the Cloud Run service to **already exist**. Before your first build, create the service manually:
+
+```bash
+gcloud run deploy edu-support-ai-system \
+  --image gcr.io/YOUR_PROJECT_ID/edu-support-ai-system:latest \
+  --platform managed \
+  --region us-central1 \
+  --allow-unauthenticated \
+  --port 8000
+```
+
+> **Why use `services update` instead of `deploy`?**  
+> `services update` is more reliable in CI/CD pipelines because it only updates existing services and fails fast if the service doesn't exist, preventing accidental service creation with wrong settings. `deploy` can create or update, which might mask configuration issues.
+
+After this initial creation, all subsequent builds will automatically update the service.
+
+---
+
 ## Deployment Options
 
 ### Option 1: Manual Cloud Build + Cloud Run

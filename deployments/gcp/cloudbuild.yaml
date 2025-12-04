@@ -1,4 +1,10 @@
 # Google Cloud Build Configuration for Educational Support AI System
+#
+# NOTE: Before running this build, create the Cloud Run service first:
+#   gcloud run deploy edu-support-ai-system --image gcr.io/$PROJECT_ID/edu-support-ai-system:latest \
+#     --region us-central1 --platform managed --allow-unauthenticated --port 8000
+#
+# After initial creation, this build will update the existing service automatically.
 
 # Build the Docker image and push to Google Container Registry
 steps:
@@ -29,25 +35,22 @@ steps:
       - "gcr.io/$PROJECT_ID/edu-support-ai-system:latest"
     id: "push-image-latest"
 
-  # Step 4: Deploy to Cloud Run (optional - uncomment to enable)
-  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
-    entrypoint: gcloud
+  # Step 4: Deploy to Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
     args:
-      - "run"
-      - "deploy"
-      - "edu-support-ai-system"
-      - "--image"
-      - "gcr.io/$PROJECT_ID/edu-support-ai-system:$COMMIT_SHA"
-      - "--region"
-      - "us-central1"
-      - "--platform"
-      - "managed"
-      - "--allow-unauthenticated"
-      - "--port"
-      - "8000"
-      - "--set-env-vars"
-      - "API_HOST=0.0.0.0,API_PORT=8000,CORS_ORIGINS=*"
-    id: "deploy-cloud-run"
+      - run
+      - services
+      - update
+      - $_SERVICE_NAME
+      - "--platform=managed"
+      - "--image=gcr.io/$PROJECT_ID/edu-support-ai-system:$COMMIT_SHA"
+      - "--labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID"
+      - "--region=$_REGION"
+      - "--port=8000"
+      - "--update-env-vars=API_HOST=0.0.0.0,API_PORT=8000,CORS_ORIGINS=*,SESSION_EXPIRATION_SECONDS=3600,ALLOW_ALL_API_KEYS=false"
+      - "--quiet"
+    id: Deploy
+    entrypoint: gcloud
 
 # Images to be pushed to Google Container Registry
 images:
