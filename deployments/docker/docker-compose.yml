@@ -37,6 +37,12 @@ services:
       
       # Database Configuration
       - DATABASE_URL=${DATABASE_URL:-postgresql://${DB_USER:-eduai}:${DB_PASSWORD:-changeme}@db:5432/${DB_NAME:-eduai_db}}
+      
+      # Vector Database Configuration
+      - QDRANT_HOST=${QDRANT_HOST:-qdrant}
+      - QDRANT_PORT=${QDRANT_PORT:-6333}
+      - QDRANT_COLLECTION_NAME=${QDRANT_COLLECTION_NAME:-documents}
+      - VECTOR_DIMENSION=${VECTOR_DIMENSION:-768}
     
     # Load environment variables from .env file (optional)
     # Create a .env file in this directory or use environment variables directly
@@ -50,7 +56,7 @@ services:
     # Restart policy
     restart: unless-stopped
     
-    # Depends on database
+    # Depends on database (Qdrant starts independently)
     depends_on:
       db:
         condition: service_healthy
@@ -88,9 +94,25 @@ services:
       timeout: 5s
       retries: 5
 
+  # Qdrant Vector Database
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: edu-support-qdrant
+    ports:
+      - "${QDRANT_PORT:-6333}:6333"
+      - "6334:6334"  # gRPC port
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - edu-ai-network
+    restart: unless-stopped
+    # Health check disabled - Qdrant image doesn't include curl/wget
+    # Service is accessible on port 6333
+
 networks:
   edu-ai-network:
     driver: bridge
 
 volumes:
   postgres_data:
+  qdrant_data:

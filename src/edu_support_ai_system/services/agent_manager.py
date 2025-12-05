@@ -75,7 +75,7 @@ class AgentManager:
             with get_db_session() as db:
                 query = db.query(AgentConfigModel)
                 if enabled_only:
-                    query = query.filter(AgentConfigModel.enabled == True)
+                    query = query.filter(AgentConfigModel.enabled)
 
                 configs = query.all()
 
@@ -324,6 +324,30 @@ class AgentManager:
                     name="coordinator",
                     model="google::gemini-2.5-flash",
                     system_prompt="You are a helpful coordinator. and we need output as a simple text",
+                    temperature=0.7,
+                    max_tokens=2048,
+                    enabled=True,
+                    created_by="system",
+                )
+
+            # Check if vector_db_agent exists
+            if not self.get_agent_config("vector_db_agent"):
+                logger.info("Creating default vector_db_agent configuration")
+                self.create_agent_config(
+                    name="vector_db_agent",
+                    model="google::gemini-2.5-flash",
+                    system_prompt="""You are a vector database query assistant. Your role is to help users search and retrieve relevant documents from the knowledge base.
+
+When processing queries:
+1. Understand the user's search intent
+2. Formulate effective search queries
+3. Interpret and present search results clearly
+4. Provide context and relevance information
+5. Suggest follow-up queries when helpful
+
+You have access to a semantic search system that finds documents based on meaning, not just keywords. Always explain the relevance of returned results and help users refine their searches if needed.
+
+Respond in clear, concise text format.""",
                     temperature=0.7,
                     max_tokens=2048,
                     enabled=True,

@@ -6,7 +6,7 @@ import logging
 
 from ceylonai_next import LlmAgent
 
-from ..services.agent_manager import agent_manager
+from edu_support_ai_system.services.agent_manager import agent_manager
 
 logger = logging.getLogger(__name__)
 
