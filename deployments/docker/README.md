@@ -34,6 +34,22 @@ This directory contains Docker and Docker Compose configuration for the Educatio
 
 All configuration is done via the `.env` file. See `.env.example` for available options:
 
+### Google API Key (Required)
+
+The application uses Google Gemini AI for the agent mesh. You **must** set your Google API key:
+
+1. **Get your API key:**
+
+   - Visit: https://makersuite.google.com/app/apikey
+   - Create a new API key
+
+2. **Set in `.env`:**
+   ```bash
+   GOOGLE_API_KEY=your-google-api-key-here
+   ```
+
+**⚠️ Without this key, the application will fail to start!**
+
 ### API Keys (Production)
 
 To use API key validation in production:

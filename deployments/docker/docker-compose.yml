@@ -28,6 +28,9 @@ services:
       # API Key Configuration
       - VALID_API_KEYS=${VALID_API_KEYS:-demo-key-123,test-key-456,dev-key-789}
       
+      # Google API Configuration
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      
       # Database Configuration
       - DATABASE_URL=${DATABASE_URL:-postgresql://${DB_USER:-eduai}:${DB_PASSWORD:-changeme}@db:5432/${DB_NAME:-eduai_db}}
     

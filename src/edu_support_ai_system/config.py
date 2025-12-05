@@ -1,4 +1,5 @@
 """Configuration management for edu_support_ai_system"""
+
 import os
 from typing import Set
 
@@ -20,7 +21,9 @@ MAX_PAGE_SIZE = int(os.getenv("MAX_PAGE_SIZE", "100"))
 # Load API keys from environment variable (comma-separated)
 # Example: VALID_API_KEYS=key1,key2,key3
 _api_keys_env = os.getenv("VALID_API_KEYS", "demo-key-123,test-key-456,dev-key-789")
-VALID_API_KEYS: Set[str] = set(key.strip() for key in _api_keys_env.split(",") if key.strip())
+VALID_API_KEYS: Set[str] = set(
+    key.strip() for key in _api_keys_env.split(",") if key.strip()
+)
 
 # Allow all keys in development
 ALLOW_ALL_API_KEYS = os.getenv("ALLOW_ALL_API_KEYS", "true").lower() == "true"
@@ -32,10 +35,14 @@ DB_MAX_OVERFLOW = int(os.getenv("DB_MAX_OVERFLOW", "10"))
 DB_POOL_TIMEOUT = int(os.getenv("DB_POOL_TIMEOUT", "30"))
 DB_POOL_RECYCLE = int(os.getenv("DB_POOL_RECYCLE", "3600"))
 
+# Google API Configuration
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", None)
+
 
 # Settings object for easier access
 class Settings:
     """Settings object for configuration"""
+
     HOST = HOST
     PORT = PORT
     CORS_ORIGINS = CORS_ORIGINS
@@ -49,7 +56,7 @@ class Settings:
     DB_MAX_OVERFLOW = DB_MAX_OVERFLOW
     DB_POOL_TIMEOUT = DB_POOL_TIMEOUT
     DB_POOL_RECYCLE = DB_POOL_RECYCLE
+    GOOGLE_API_KEY = GOOGLE_API_KEY
 
 
 settings = Settings()
-

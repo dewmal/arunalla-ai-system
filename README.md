@@ -96,6 +96,30 @@ VALID_API_KEYS=key1,key2,key3
 ALLOW_ALL_API_KEYS=false
 ```
 
+### Google API Configuration
+
+The application uses Google Gemini AI for the agent mesh. You **must** configure your Google API key:
+
+- `GOOGLE_API_KEY` - Google API key for Gemini models (required)
+  - Get your key from: https://makersuite.google.com/app/apikey
+  - Example: `GOOGLE_API_KEY=AIzaSy...`
+  - **⚠️ Required:** The application will not start without this key
+
+**Setting up Google API Key:**
+
+```bash
+# 1. Get your API key from Google AI Studio
+# Visit: https://makersuite.google.com/app/apikey
+
+# 2. Add to .env file
+echo "GOOGLE_API_KEY=your-api-key-here" >> .env
+
+# 3. Restart the application
+docker-compose restart api  # If using Docker
+# OR
+uv run edu-support-ai-system --reload  # If running locally
+```
+
 ### Database Configuration
 
 - `DATABASE_URL` - PostgreSQL connection string (optional, defaults to in-memory storage)

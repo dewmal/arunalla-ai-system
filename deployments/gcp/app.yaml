@@ -12,6 +12,20 @@ env_variables:
   DEFAULT_PAGE_SIZE: "20"
   MAX_PAGE_SIZE: "100"
   ALLOW_ALL_API_KEYS: "false"
+  # Set VALID_API_KEYS via Secret Manager or gcloud run services update
+  # VALID_API_KEYS: "your-production-keys-here"
+
+  # Google API Configuration
+  # Set GOOGLE_API_KEY via Secret Manager for security
+  # GOOGLE_API_KEY: "your-google-api-key"
+
+  # Database Configuration
+  # Set DATABASE_URL via Secret Manager or gcloud run services update
+  # DATABASE_URL: "postgresql://user:password@host:5432/database"
+  DB_POOL_SIZE: "5"
+  DB_MAX_OVERFLOW: "10"
+  DB_POOL_TIMEOUT: "30"
+  DB_POOL_RECYCLE: "3600"
 
 # Automatic scaling configuration
 automatic_scaling:
