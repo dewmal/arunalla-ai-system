@@ -54,6 +54,44 @@ docker-compose up -d
 - `WS /chat/ws/{session_id}` - Chat with WebSocket
 - `GET /history` - Get paginated chat history
 
+## Admin Panel
+
+The admin panel allows you to configure AI agent system prompts and settings without code changes.
+
+### Accessing the Admin Panel
+
+1. **Set Admin API Key** in your `.env` file:
+
+   ```bash
+   # Generate a secure key
+   python -c "import secrets; print(secrets.token_urlsafe(32))"
+
+   # Add to .env
+   ADMIN_API_KEY=your-generated-key-here
+   ```
+
+2. **Access the Panel**: Navigate to `http://localhost:8000/admin/ui`
+
+3. **Login**: Enter your admin API key
+
+### Features
+
+- 🎨 **Modern UI** - Beautiful glassmorphism design with dark mode
+- 🤖 **Agent Management** - Create, edit, and delete AI agents
+- 📝 **System Prompts** - Configure agent behavior and personality
+- ⚙️ **Model Settings** - Adjust temperature, max tokens, and model selection
+- 📊 **Change History** - Track all prompt modifications
+- 🔄 **Hot Reload** - Changes take effect without restart (when using database)
+
+### Admin API Endpoints
+
+- `GET /admin/agents` - List all agents
+- `GET /admin/agents/{name}` - Get agent configuration
+- `POST /admin/agents/{name}` - Create new agent
+- `PUT /admin/agents/{name}` - Update agent configuration
+- `DELETE /admin/agents/{name}` - Delete agent
+- `GET /admin/agents/{name}/history` - Get prompt change history
+
 ## Documentation
 
 - **API Documentation**: http://localhost:8000/docs (Swagger UI)

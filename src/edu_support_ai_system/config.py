@@ -38,6 +38,12 @@ DB_POOL_RECYCLE = int(os.getenv("DB_POOL_RECYCLE", "3600"))
 # Google API Configuration
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", None)
 
+# Admin Configuration
+ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", None)
+ALLOW_DYNAMIC_AGENT_CONFIG = (
+    os.getenv("ALLOW_DYNAMIC_AGENT_CONFIG", "true").lower() == "true"
+)
+
 
 # Settings object for easier access
 class Settings:
@@ -57,6 +63,8 @@ class Settings:
     DB_POOL_TIMEOUT = DB_POOL_TIMEOUT
     DB_POOL_RECYCLE = DB_POOL_RECYCLE
     GOOGLE_API_KEY = GOOGLE_API_KEY
+    ADMIN_API_KEY = ADMIN_API_KEY
+    ALLOW_DYNAMIC_AGENT_CONFIG = ALLOW_DYNAMIC_AGENT_CONFIG
 
 
 settings = Settings()

@@ -31,6 +31,10 @@ services:
       # Google API Configuration
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       
+      # Admin Panel Configuration
+      - ADMIN_API_KEY=${ADMIN_API_KEY}
+      - ALLOW_DYNAMIC_AGENT_CONFIG=${ALLOW_DYNAMIC_AGENT_CONFIG:-true}
+      
       # Database Configuration
       - DATABASE_URL=${DATABASE_URL:-postgresql://${DB_USER:-eduai}:${DB_PASSWORD:-changeme}@db:5432/${DB_NAME:-eduai_db}}
     

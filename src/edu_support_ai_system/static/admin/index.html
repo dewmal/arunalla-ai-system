@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Agent Admin Panel</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+      <div class="login-card glass-card">
+        <div class="login-header">
+          <div class="logo-icon">🤖</div>
+          <h1>AI Agent Admin Panel</h1>
+          <p>Configure your AI agents and system prompts</p>
+        </div>
+        <form id="loginForm" class="login-form">
+          <div class="form-group">
+            <label for="adminApiKey">Admin API Key</label>
+            <input
+              type="password"
+              id="adminApiKey"
+              placeholder="Enter your admin API key"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <span>Login</span>
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                d="M15 3h4a2 2 0 0 1 2 2v14a 2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"
+              />
+            </svg>
+          </button>
+        </form>
+        <div id="loginError" class="error-message" style="display: none"></div>
+      </div>
+    </div>
+
+    <!-- Main Admin Panel -->
+    <div id="adminPanel" class="admin-container" style="display: none">
+      <!-- Header -->
+      <header class="admin-header glass-card">
+        <div class="header-left">
+          <div class="logo-icon">🤖</div>
+          <h1>AI Agent Admin</h1>
+        </div>
+        <div class="header-right">
+          <button id="createAgentBtn" class="btn btn-primary">
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            <span>Create Agent</span>
+          </button>
+          <button id="logoutBtn" class="btn btn-secondary">
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"
+              />
+            </svg>
+            <span>Logout</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="admin-main">
+        <!-- Sidebar -->
+        <aside class="sidebar glass-card">
+          <div class="sidebar-header">
+            <h2>Agents</h2>
+            <button id="refreshAgentsBtn" class="btn-icon" title="Refresh">
+              <svg
+                class="icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"
+                />
+              </svg>
+            </button>
+          </div>
+          <div class="search-box">
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+            <input
+              type="text"
+              id="searchAgents"
+              placeholder="Search agents..."
+            />
+          </div>
+          <div id="agentsList" class="agents-list">
+            <!-- Agent items will be dynamically inserted here -->
+          </div>
+        </aside>
+
+        <!-- Content Area -->
+        <section class="content-area">
+          <!-- Welcome Screen -->
+          <div id="welcomeScreen" class="welcome-screen">
+            <div class="welcome-content">
+              <div class="welcome-icon">🎯</div>
+              <h2>Welcome to AI Agent Admin</h2>
+              <p>
+                Select an agent from the sidebar to view and edit its
+                configuration, or create a new agent to get started.
+              </p>
+            </div>
+          </div>
+
+          <!-- Agent Editor -->
+          <div id="agentEditor" class="agent-editor" style="display: none">
+            <div class="editor-header glass-card">
+              <div>
+                <h2 id="editorTitle">Agent Configuration</h2>
+                <p id="editorSubtitle" class="text-muted">
+                  Configure agent settings and system prompt
+                </p>
+              </div>
+              <div class="editor-actions">
+                <button id="viewHistoryBtn" class="btn btn-secondary">
+                  <svg
+                    class="icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  <span>History</span>
+                </button>
+                <button id="saveAgentBtn" class="btn btn-primary">
+                  <svg
+                    class="icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path
+                      d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+                    />
+                    <polyline points="17 21 17 13 7 13 7 21" />
+                    <polyline points="7 3 7 8 15 8" />
+                  </svg>
+                  <span>Save Changes</span>
+                </button>
+                <button id="deleteAgentBtn" class="btn btn-danger">
+                  <svg
+                    class="icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <polyline points="3 6 5 6 21 6" />
+                    <path
+                      d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                    />
+                  </svg>
+                  <span>Delete</span>
+                </button>
+              </div>
+            </div>
+
+            <form id="agentForm" class="agent-form">
+              <div class="form-grid">
+                <div class="form-section glass-card">
+                  <h3>Basic Settings</h3>
+                  <div class="form-group">
+                    <label for="agentName">Agent Name</label>
+                    <input
+                      type="text"
+                      id="agentName"
+                      required
+                      placeholder="e.g., coordinator"
+                    />
+                    <small>Unique identifier for the agent</small>
+                  </div>
+                  <div class="form-group">
+                    <label for="agentModel">Model</label>
+                    <select id="agentModel" required>
+                      <option value="google::gemini-2.5-flash">
+                        Google Gemini 2.5 Flash
+                      </option>
+                      <option value="google::gemini-2.0-flash">
+                        Google Gemini 2.0 Flash
+                      </option>
+                      <option value="google::gemini-1.5-pro">
+                        Google Gemini 1.5 Pro
+                      </option>
+                      <option value="google::gemini-1.5-flash">
+                        Google Gemini 1.5 Flash
+                      </option>
+                    </select>
+                    <small>AI model to use for this agent</small>
+                  </div>
+                  <div class="form-group">
+                    <label for="agentEnabled">
+                      <input type="checkbox" id="agentEnabled" checked />
+                      <span>Agent Enabled</span>
+                    </label>
+                    <small>Enable or disable this agent</small>
+                  </div>
+                </div>
+
+                <div class="form-section glass-card">
+                  <h3>Model Parameters</h3>
+                  <div class="form-group">
+                    <label for="agentTemperature">
+                      Temperature: <span id="temperatureValue">0.7</span>
+                    </label>
+                    <input
+                      type="range"
+                      id="agentTemperature"
+                      min="0"
+                      max="2"
+                      step="0.1"
+                      value="0.7"
+                    />
+                    <small
+                      >Controls randomness (0 = focused, 2 = creative)</small
+                    >
+                  </div>
+                  <div class="form-group">
+                    <label for="agentMaxTokens">Max Tokens</label>
+                    <input
+                      type="number"
+                      id="agentMaxTokens"
+                      value="2048"
+                      min="1"
+                      max="32768"
+                    />
+                    <small>Maximum response length</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section glass-card">
+                <h3>System Prompt</h3>
+                <div class="form-group">
+                  <textarea
+                    id="agentSystemPrompt"
+                    rows="10"
+                    required
+                    placeholder="Enter the system prompt for this agent...&#10;&#10;Example:&#10;You are a helpful coordinator. You need to output simple text responses."
+                  ></textarea>
+                  <small
+                    >Instructions that define the agent's behavior and
+                    personality</small
+                  >
+                </div>
+                <div class="form-group">
+                  <label for="changeReason">Change Reason (Optional)</label>
+                  <input
+                    type="text"
+                    id="changeReason"
+                    placeholder="Why are you making this change?"
+                  />
+                  <small>Document why you're updating the configuration</small>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- History Modal -->
+          <div id="historyModal" class="modal" style="display: none">
+            <div class="modal-content glass-card">
+              <div class="modal-header">
+                <h2>Prompt Change History</h2>
+                <button class="btn-icon close-modal">
+                  <svg
+                    class="icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+              <div id="historyContent" class="history-content">
+                <!-- History items will be dynamically inserted here -->
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
