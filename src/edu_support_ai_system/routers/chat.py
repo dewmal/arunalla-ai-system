@@ -2,22 +2,81 @@
 
 import asyncio
 import json
+import logging
 from datetime import datetime
 from fastapi import APIRouter, HTTPException, status, WebSocket, WebSocketDisconnect
 from sse_starlette.sse import EventSourceResponse
 
 from ..models import ChatRequest, ChatResponse, WebSocketMessage
 from ..database import session_store, message_store
-from agent_mesh.agents.coordinator import coordinator
 
 router = APIRouter(prefix="/chat", tags=["chat"])
+logger = logging.getLogger(__name__)
+
+
+async def send_message_via_mesh(message: str, from_agent: str = "chat_api") -> str:
+    """
+    Send message to coordinator through mesh network.
+
+    This function uses the mesh infrastructure for agent communication,
+    providing proper routing and error handling. Falls back to direct
+    coordinator access if mesh is unavailable.
+
+    Args:
+        message: User's message to send
+        from_agent: Identifier of the sending agent (default: "chat_api")
+
+    Returns:
+        Response from the coordinator agent
+
+    Raises:
+        RuntimeError: If both mesh and direct communication fail
+    """
+    try:
+        # Try mesh-based communication first
+        from agent_mesh.mesh import send_message, is_agent_registered
+
+        if is_agent_registered("Coordinator"):
+            # Use mesh to route message to coordinator
+            response = send_message(
+                from_agent=from_agent, to_agent="Coordinator", message=message
+            )
+            return response
+        else:
+            # Fallback: Coordinator not registered in mesh yet
+            # Use direct access as fallback
+            from agent_mesh.agents.coordinator import coordinator
+
+            response = await coordinator.send_message_async(message)
+            return (
+                response
+                if response
+                else "I'm sorry, I didn't understand that. Can you please rephrase your question?"
+            )
+
+    except Exception as e:
+        # If mesh communication fails, fallback to direct coordinator access
+        try:
+            from agent_mesh.agents.coordinator import coordinator
+
+            response = await coordinator.send_message_async(message)
+            return (
+                response
+                if response
+                else "I'm sorry, I didn't understand that. Can you please rephrase your question?"
+            )
+        except Exception as fallback_error:
+            raise RuntimeError(
+                f"Failed to communicate with coordinator: {e}, Fallback error: {fallback_error}"
+            )
 
 
 async def generate_ai_response(message: str) -> str:
     """
-    Generate AI response (mock implementation)
+    Generate AI response using mesh-based communication.
 
-    In production, this would integrate with your AI model/service.
+    This function routes the user message through the mesh network to the
+    coordinator agent, which orchestrates the response using specialized agents.
 
     Args:
         message: User's message
@@ -25,15 +84,16 @@ async def generate_ai_response(message: str) -> str:
     Returns:
         AI generated response
     """
-
-    response = await coordinator.send_message_async(message)
-    if response:
+    try:
+        response = await send_message_via_mesh(message)
         return response
-    else:
-        return "I'm sorry, I didn't understand that. Can you please rephrase your question?"
+    except RuntimeError as e:
+        # Log error and return user-friendly message
+        logger.error(f"Error generating AI response: {e}")
+        return "I'm experiencing technical difficulties. Please try again later."
 
 
-async def stream_response(message: str) -> str:
+async def stream_response(message: str):
     """
     Stream response word by word
 

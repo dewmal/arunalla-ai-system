@@ -60,6 +60,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      qdrant:
+        condition: service_started
     
     # Health check
     healthcheck:
@@ -98,6 +100,7 @@ services:
   qdrant:
     image: qdrant/qdrant:latest
     container_name: edu-support-qdrant
+    user: "0:0"  # Run as root (Qdrant's default user)
     ports:
       - "${QDRANT_PORT:-6333}:6333"
       - "6334:6334"  # gRPC port
@@ -106,8 +109,6 @@ services:
     networks:
       - edu-ai-network
     restart: unless-stopped
-    # Health check disabled - Qdrant image doesn't include curl/wget
-    # Service is accessible on port 6333
 
 networks:
   edu-ai-network:

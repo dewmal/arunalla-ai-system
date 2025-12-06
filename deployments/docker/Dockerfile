@@ -26,14 +26,16 @@ WORKDIR /app
 # Install uv package manager
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
+# Create a non-root user FIRST
+RUN useradd -m -u 1000 appuser
+
 # Copy project files and dependencies from builder
 COPY --from=builder /app/pyproject.toml /app/uv.lock ./
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/.venv ./.venv
 
-# Create a non-root user
-RUN useradd -m -u 1000 appuser && \
-    chown -R appuser:appuser /app
+# Fix ownership after copying
+RUN chown -R appuser:appuser /app
 
 # Switch to non-root user
 USER appuser
