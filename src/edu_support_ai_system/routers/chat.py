@@ -34,9 +34,11 @@ async def send_message_via_mesh(message: str, from_agent: str = "chat_api") -> s
     """
     try:
         # Try mesh-based communication first
-        from agent_mesh.mesh import send_message, is_agent_registered
+        from agent_mesh.mesh import send_message, is_agent_registered, get_agents
 
+        logger.info(f"Registered agents: {get_agents()}")
         if is_agent_registered("Coordinator"):
+            logger.info("Coordinator registered in mesh")
             # Use mesh to route message to coordinator
             response = send_message(
                 from_agent=from_agent, to_agent="Coordinator", message=message

@@ -44,6 +44,9 @@ ALLOW_DYNAMIC_AGENT_CONFIG = (
     os.getenv("ALLOW_DYNAMIC_AGENT_CONFIG", "true").lower() == "true"
 )
 
+# Logging Configuration
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
+
 
 # Settings object for easier access
 class Settings:
@@ -65,6 +68,7 @@ class Settings:
     GOOGLE_API_KEY = GOOGLE_API_KEY
     ADMIN_API_KEY = ADMIN_API_KEY
     ALLOW_DYNAMIC_AGENT_CONFIG = ALLOW_DYNAMIC_AGENT_CONFIG
+    LOG_LEVEL = LOG_LEVEL
 
 
 settings = Settings()

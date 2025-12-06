@@ -8,6 +8,10 @@ from fastapi.staticfiles import StaticFiles
 
 from . import config
 from .routers import session, chat, history, admin
+from .logging_config import setup_logging
+
+# Configure logging as early as possible
+setup_logging()
 
 # Create FastAPI application
 app = FastAPI(

@@ -148,3 +148,24 @@ def health_check() -> bool:
     except Exception as e:
         logger.error(f"Mesh health check failed: {e}")
         return False
+
+
+def get_agents() -> List[str]:
+    """
+    Get all agents registered with the mesh.
+
+    Returns:
+        List of agent names
+    """
+    try:
+        mesh = get_mesh()
+        # Ceylon AI uses get_registered_agents() method
+        agents = (
+            mesh.get_registered_agents()
+            if hasattr(mesh, "get_registered_agents")
+            else []
+        )
+        return agents
+    except Exception as e:
+        logger.error(f"Failed to list agents: {e}")
+        return []

@@ -11,66 +11,75 @@ services:
       # Server Configuration
       - API_HOST=0.0.0.0
       - API_PORT=8000
-      
+
       # CORS Configuration
       - CORS_ORIGINS=${CORS_ORIGINS:-*}
-      
+
       # Session Configuration
       - SESSION_EXPIRATION_SECONDS=${SESSION_EXPIRATION_SECONDS:-3600}
-      
+
       # Pagination Configuration
       - DEFAULT_PAGE_SIZE=${DEFAULT_PAGE_SIZE:-20}
       - MAX_PAGE_SIZE=${MAX_PAGE_SIZE:-100}
-      
+
       # Development Settings
       - ALLOW_ALL_API_KEYS=${ALLOW_ALL_API_KEYS:-true}
-      
+
       # API Key Configuration
       - VALID_API_KEYS=${VALID_API_KEYS:-demo-key-123,test-key-456,dev-key-789}
-      
+
       # Google API Configuration
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-      
+
       # Admin Panel Configuration
       - ADMIN_API_KEY=${ADMIN_API_KEY}
       - ALLOW_DYNAMIC_AGENT_CONFIG=${ALLOW_DYNAMIC_AGENT_CONFIG:-true}
-      
+
       # Database Configuration
       - DATABASE_URL=${DATABASE_URL:-postgresql://${DB_USER:-eduai}:${DB_PASSWORD:-changeme}@db:5432/${DB_NAME:-eduai_db}}
-      
+
       # Vector Database Configuration
       - QDRANT_HOST=${QDRANT_HOST:-qdrant}
       - QDRANT_PORT=${QDRANT_PORT:-6333}
       - QDRANT_COLLECTION_NAME=${QDRANT_COLLECTION_NAME:-documents}
       - VECTOR_DIMENSION=${VECTOR_DIMENSION:-768}
-    
+
+      # Logging Configuration
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+
     # Load environment variables from .env file (optional)
     # Create a .env file in this directory or use environment variables directly
     env_file:
       - .env
-    
+
     # Optional: Mount volume for development with hot reload
     volumes:
       - ../../src:/app/src:ro
-    
+
     # Restart policy
     restart: unless-stopped
-    
+
     # Depends on database (Qdrant starts independently)
     depends_on:
       db:
         condition: service_healthy
       qdrant:
         condition: service_started
-    
+
     # Health check
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 5s
-    
+
     # Network
     networks:
       - edu-ai-network
@@ -91,7 +100,8 @@ services:
       - edu-ai-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-eduai} -d ${DB_NAME:-eduai_db}"]
+      test:
+        ["CMD-SHELL", "pg_isready -U ${DB_USER:-eduai} -d ${DB_NAME:-eduai_db}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -100,10 +110,10 @@ services:
   qdrant:
     image: qdrant/qdrant:latest
     container_name: edu-support-qdrant
-    user: "0:0"  # Run as root (Qdrant's default user)
+    user: "0:0" # Run as root (Qdrant's default user)
     ports:
       - "${QDRANT_PORT:-6333}:6333"
-      - "6334:6334"  # gRPC port
+      - "6334:6334" # gRPC port
     volumes:
       - qdrant_data:/qdrant/storage
     networks:
