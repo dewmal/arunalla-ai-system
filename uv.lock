@@ -72,14 +72,14 @@ wheels = [
 
 [[package]]
 name = "ceylonai-next"
-version = "0.2.5"
+version = "0.2.6"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/3d/f7/8219d490139aaed87dad5abeefeaae82cd32787f17c4f1eca66507499a17/ceylonai_next-0.2.5.tar.gz", hash = "sha256:ab16419aa1a9fe14b823fb1e3f3cead5ca9c5a16ea8a14dd1fb065a96f0d1d43", size = 283831, upload-time = "2025-12-02T06:23:37.329Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/2c/97/7afd87734e9d775326d05c18a5f3fd1e8cd2a00bbf1c3dea8b7e46811f30/ceylonai_next-0.2.6.tar.gz", hash = "sha256:b42189745214f26f7ff59d1b3862b99f3ccc935d9405aed569f883f30af600cf", size = 318284, upload-time = "2025-12-06T04:41:18.663Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/72/14/96f87c48e1408b7f35e3d804db58d52e1aa332fcbbb4b986eae2a46005ac/ceylonai_next-0.2.5-cp39-abi3-macosx_10_12_x86_64.whl", hash = "sha256:5a216c211b6d4c22909498fbc663aa4cd165b3004a80b52f004b1b3048966563", size = 4821671, upload-time = "2025-12-02T06:23:28.804Z" },
-    { url = "https://files.pythonhosted.org/packages/9d/a9/f51b62d5c1be6c725e9050f756d3b42f1c04f45835cf1d6e050440725a45/ceylonai_next-0.2.5-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:350f7bb64ad4871f5bce7d6ae0644a3b6b108ce9b3bd80840ee9a333d6fe2ca5", size = 4689441, upload-time = "2025-12-02T06:23:31.322Z" },
-    { url = "https://files.pythonhosted.org/packages/d0/7f/712af607ccd15f74244da5150f2ca79e0993295253f426fe601b13360f20/ceylonai_next-0.2.5-cp39-abi3-manylinux_2_34_x86_64.whl", hash = "sha256:61e6295f4748e8a1fec72a97b8159e06504712d59790e22057f8375816ff8e94", size = 7459367, upload-time = "2025-12-02T06:23:33.526Z" },
-    { url = "https://files.pythonhosted.org/packages/ba/e5/31a1ab3f7f570383476e4c595191673b117635ef57d3c2e8918e9cf753a9/ceylonai_next-0.2.5-cp39-abi3-win_amd64.whl", hash = "sha256:5ebbe9dc7e347b0b1c4b565b72fd165b1c50510db54feeb98a21d644ce547a10", size = 5202875, upload-time = "2025-12-02T06:23:35.779Z" },
+    { url = "https://files.pythonhosted.org/packages/c2/3e/50fe33d725fbb79e5226061e43df5f9d0c6fab4dc5cd9796daf161400a66/ceylonai_next-0.2.6-cp39-abi3-macosx_10_12_x86_64.whl", hash = "sha256:60c140aff8f0d97c80da92ce123dc362a99582cbf1208f5b38d7cacb4e5cc72c", size = 4822457, upload-time = "2025-12-06T04:41:10.753Z" },
+    { url = "https://files.pythonhosted.org/packages/ef/97/0207a097b926950d4ca17e7501f88cdfa2802803a78a22a88704ef4a4e2c/ceylonai_next-0.2.6-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:0587d9872a137941dffee033f67f27754248f7afd8213b784d4353f27e04b04c", size = 4690224, upload-time = "2025-12-06T04:41:12.654Z" },
+    { url = "https://files.pythonhosted.org/packages/22/cc/ddca53e896584a08e450d036e0f23d4b1795cae945f5545f041c93dcfd0a/ceylonai_next-0.2.6-cp39-abi3-manylinux_2_34_x86_64.whl", hash = "sha256:fd3dcb498580a990e9ce938968747f9b21c74e0995efb88271a25397fe7ecaac", size = 7460152, upload-time = "2025-12-06T04:41:14.421Z" },
+    { url = "https://files.pythonhosted.org/packages/77/40/9eade58a4a1c54dfcb5c9230cf79011cd1c2e963747f0bd77290aab6aa7d/ceylonai_next-0.2.6-cp39-abi3-win_amd64.whl", hash = "sha256:3a879d1531698d9f0adab2a1ae2be5a98bdab96014f069771e6d60cc9d4cf2ea", size = 5200033, upload-time = "2025-12-06T04:41:16.351Z" },
 ]
 
 [[package]]
@@ -180,7 +180,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "alembic", specifier = ">=1.13.0" },
-    { name = "ceylonai-next", specifier = "==0.2.5" },
+    { name = "ceylonai-next", specifier = "==0.2.6" },
     { name = "fastapi", specifier = ">=0.115.0" },
     { name = "google-generativeai", specifier = ">=0.3.0" },
     { name = "psycopg2-binary", specifier = ">=2.9.0" },
