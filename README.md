@@ -1,132 +1,94 @@
 # RAG Data Curator Tool
 
-A desktop GUI application for preparing Sri Lankan A/L & O/L exam materials for a Retrieval-Augmented Generation (RAG) pipeline.
+A tool for preparing Sri Lankan A/L and O/L exam materials for RAG (Retrieval-Augmented Generation) systems. It downloads PDFs from Google Drive, extracts text with proper Unicode support for Sinhala and Tamil, and outputs structured data ready for AI pipelines.
 
-> **Website:** <https://arunalla.help/>
+Website: https://arunalla.help/
 
-## Features
+## What it does
 
-- 📁 **File Browser** - Browse and navigate PDF files in any folder
-- 👁️ **PDF Preview** - View PDF pages with navigation controls
-- 📥 **Google Drive Download** - Download files/folders directly from Google Drive URLs
-- 📝 **Text Extraction** - Extract text from PDFs (quick 3-page or full extraction)
-- 🔤 **Unicode Detection** - Detect Sinhala, Tamil, English text and legacy font encoding
-- 🏷️ **Metadata Tagging** - Tag files with subject, year, exam level, paper type
-- 💾 **Export** - Save metadata to JSON and export to CSV for Google Sheets
+- Downloads files and folders from Google Drive
+- Extracts text from PDFs (supports Sinhala, Tamil, and English)
+- Detects whether text is proper Unicode or legacy fonts (like FM Abhaya)
+- Validates and processes documents through a pipeline
+- Outputs JSON metadata and extracted text files
 
-## Installation
+## Quick start
 
-### Prerequisites
+Install dependencies:
 
-- Python 3.8 or higher
-- pip (Python package manager)
+```
+pip install -r requirements.txt
+```
 
-### Setup
+Run the GUI app:
 
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/AdhiDevX369/arunalla-ai-system.git
-   cd arunalla-ai-system
-   ```
-
-1. Create a virtual environment (recommended):
-
-   ```bash
-   python -m venv venv
-
-   # Windows
-   venv\Scripts\activate
-
-   # macOS/Linux
-   source venv/bin/activate
-   ```
-
-1. Install dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## Usage
-
-### GUI Application
-
-Run the main application:
-
-```bash
+```
 python app.py
 ```
 
-### CLI Tools
+Or use the command line tools:
 
-The data feeder module provides command-line tools:
-
-```bash
+```
 # Extract text from a PDF
-python -m tools.data_feeder.app extract <pdf_file>
+python -m tools.data_feeder.app extract your_file.pdf
 
 # Download from Google Drive
-python -m tools.data_feeder.app download <google_drive_url> [output_folder]
+python -m tools.data_feeder.app download "https://drive.google.com/..."
 
-# Get PDF info
-python -m tools.data_feeder.app info <pdf_file>
+# Run the full pipeline
+python -m tools.data_feeder.pipeline --url "https://drive.google.com/..."
+python -m tools.data_feeder.pipeline --file file1.pdf file2.pdf
 ```
 
-### Standalone Downloader
+## Project structure
 
-Run the interactive Google Drive downloader:
-
-```bash
-python tools/data_feeder/downloader.py
+```
+app.py                  - Main GUI application
+tools/
+  data_feeder/
+    app.py              - CLI tool
+    downloader.py       - Google Drive downloader
+    pdf_extractor.py    - PDF text extraction
+    pipeline.py         - Full processing pipeline
 ```
 
-## Project Structure
+## Output
 
-```text
-arunalla-ai-system/
-├── app.py                      # Main GUI application
-├── requirements.txt            # Python dependencies
-├── README.md                   # This file
-├── LICENSE                     # License file
-├── .gitignore                  # Git ignore rules
-└── tools/
-    └── data_feeder/
-        ├── __init__.py         # Package exports
-        ├── app.py              # CLI entry point
-        ├── downloader.py       # Google Drive downloader
-        └── pdf_extractor.py    # PDF text extraction
+The pipeline creates:
+
+- `processed/` folder with extracted text and metadata
+- `pipeline_summary.json` with processing stats
+- Individual `_text.txt` and `_metadata.json` files per document
+
+Sample metadata:
+
+```json
+{
+  "file_name": "example.pdf",
+  "page_count": 5,
+  "has_sinhala": true,
+  "has_tamil": false,
+  "unicode_status": "VALID (Sinhala Unicode)"
+}
 ```
+
+## Security
+
+- URL validation (only Google Drive allowed)
+- Path traversal protection
+- File size limits (100MB max)
+- Input sanitization
 
 ## Dependencies
 
-| Package | Purpose |
-|---------|---------|
-| PyMuPDF | PDF rendering and quick text extraction |
-| Pillow | Image processing for preview |
-| pdfplumber | Full text extraction (better accuracy) |
-| PyPDF2 | Fallback PDF text extraction |
-| gdown | Google Drive downloads |
-| requests | HTTP requests |
-| beautifulsoup4 | HTML parsing |
-
-## Supported Content
-
-- **Exam Levels:** A/L (Advanced Level), O/L (Ordinary Level)
-- **Languages:** Sinhala (Unicode), Tamil (Unicode), English
-- **Paper Types:** Past Papers, Model Papers, Notes, Tutorials, Marking Schemes, Syllabi
-
-## Unicode Detection
-
-The tool detects:
-
-- ✅ Valid Sinhala Unicode (U+0D80 to U+0DFF)
-- ✅ Valid Tamil Unicode (U+0B80 to U+0BFF)
-- ✅ English/Latin text
-- ❌ Legacy Sinhala fonts (FM, DL, Kaputa) - These are NOT usable for RAG
+- PyMuPDF - PDF rendering
+- pdfplumber - Text extraction
+- gdown - Google Drive downloads
+- Pillow - Image handling
 
 ## License
 
+See LICENSE file.
 See [LICENSE](LICENSE) file for details.
 
 ## Contributing
