@@ -1,0 +1,23 @@
+{
+  "processed_at": "2025-12-08T12:52:38.479484",
+  "total_files": 1,
+  "successful": 1,
+  "failed": 0,
+  "results": [
+    {
+      "file_name": "valid_sinhala.pdf",
+      "file_path": "H:\\tools-test\\arunalla-ai-system\\downloads\\valid_sinhala.pdf",
+      "file_size_mb": 0.03,
+      "page_count": 1,
+      "text_length": 212,
+      "has_sinhala": true,
+      "has_tamil": false,
+      "has_english": true,
+      "is_legacy_font": false,
+      "unicode_status": "VALID (Sinhala Unicode)",
+      "source_url": "https://drive.google.com/file/d/12UTM-20qi85_GKoVXHjWv8oFcMnhuO4P/view?usp=sharing",
+      "processed_at": "2025-12-08T12:52:38.478774",
+      "error": null
+    }
+  ]
+}

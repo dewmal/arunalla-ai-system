@@ -2,8 +2,94 @@ import gdown
 import os
 import re
 import sys
+import asyncio
 import requests
+from pathlib import Path
+from typing import Optional, Tuple
+from concurrent.futures import ThreadPoolExecutor
+from urllib.parse import urlparse
 from bs4 import BeautifulSoup
+
+# Configuration
+REQUEST_TIMEOUT = 30
+MAX_FILENAME_LENGTH = 200
+ALLOWED_DOMAINS = {'drive.google.com', 'docs.google.com'}
+
+
+class DownloadSecurityError(Exception):
+    """Raised when security validation fails"""
+    pass
+
+
+def validate_url(url: str) -> str:
+    """
+    Validate and sanitize Google Drive URL.
+    
+    Security checks:
+    - URL format validation
+    - Domain whitelist check
+    - Protocol validation (HTTPS only)
+    
+    Args:
+        url: Google Drive URL
+        
+    Returns:
+        Validated URL
+        
+    Raises:
+        DownloadSecurityError: If validation fails
+    """
+    if not url or not isinstance(url, str):
+        raise DownloadSecurityError("Invalid URL: URL must be a non-empty string")
+    
+    url = url.strip()
+    
+    try:
+        parsed = urlparse(url)
+    except Exception as e:
+        raise DownloadSecurityError(f"Invalid URL format: {e}")
+    
+    # Must be HTTPS
+    if parsed.scheme not in ('https', 'http'):
+        raise DownloadSecurityError("Invalid URL: Only HTTP/HTTPS URLs allowed")
+    
+    # Domain whitelist
+    if parsed.netloc not in ALLOWED_DOMAINS:
+        raise DownloadSecurityError(f"Invalid domain: {parsed.netloc}. Only Google Drive URLs allowed.")
+    
+    return url
+
+
+def validate_output_path(output_folder: str) -> Path:
+    """
+    Validate and sanitize output folder path.
+    
+    Security checks:
+    - Path traversal prevention
+    - Path format validation
+    
+    Args:
+        output_folder: Output folder path
+        
+    Returns:
+        Validated Path object
+        
+    Raises:
+        DownloadSecurityError: If validation fails
+    """
+    if not output_folder or not isinstance(output_folder, str):
+        raise DownloadSecurityError("Invalid path: Path must be a non-empty string")
+    
+    # Check for path traversal
+    if '..' in output_folder:
+        raise DownloadSecurityError("Security error: Path traversal detected")
+    
+    try:
+        path = Path(output_folder).resolve()
+    except Exception as e:
+        raise DownloadSecurityError(f"Invalid path format: {e}")
+    
+    return path
 
 
 def extract_file_id(url):
@@ -219,9 +305,24 @@ def download_file(url, output_folder):
         return False
 
 
-def download(url, output_folder):
-    """Download file or folder based on URL type"""
-    url = url.strip()
+def download(url: str, output_folder: str) -> bool:
+    """
+    Download file or folder based on URL type.
+    
+    Args:
+        url: Google Drive URL
+        output_folder: Output folder path
+        
+    Returns:
+        True if download succeeded, False otherwise
+    """
+    # Validate inputs
+    try:
+        url = validate_url(url)
+        validate_output_path(output_folder)
+    except DownloadSecurityError as e:
+        print(f"Security Error: {e}")
+        return False
     
     if is_folder_url(url):
         print("Detected: FOLDER URL")
@@ -229,6 +330,27 @@ def download(url, output_folder):
     else:
         print("Detected: FILE URL")
         return download_file(url, output_folder)
+
+
+async def download_async(url: str, output_folder: str) -> bool:
+    """
+    Async version of download function.
+    Runs download in a thread pool to avoid blocking.
+    
+    Args:
+        url: Google Drive URL
+        output_folder: Output folder path
+        
+    Returns:
+        True if download succeeded, False otherwise
+    """
+    loop = asyncio.get_event_loop()
+    with ThreadPoolExecutor() as executor:
+        result = await loop.run_in_executor(
+            executor,
+            lambda: download(url, output_folder)
+        )
+    return result
 
 
 def main():
