@@ -50,8 +50,8 @@ def validate_url(url: str) -> str:
         raise DownloadSecurityError(f"Invalid URL format: {e}")
     
     # Must be HTTPS
-    if parsed.scheme not in ('https', 'http'):
-        raise DownloadSecurityError("Invalid URL: Only HTTP/HTTPS URLs allowed")
+    if parsed.scheme != 'https':
+        raise DownloadSecurityError("Invalid URL: Only HTTPS URLs allowed")
     
     # Domain whitelist
     if parsed.netloc not in ALLOWED_DOMAINS:
