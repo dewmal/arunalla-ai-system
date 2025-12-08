@@ -98,7 +98,7 @@ def validate_pdf_path(pdf_path: str) -> Path:
     return path
 
 
-def truncate_text(text: str, max_length: int = MAX_TEXT_LENGTH) -> tuple[str, bool]:
+def truncate_text(text: str, max_length: int = MAX_TEXT_LENGTH) -> Tuple[str, bool]:
     """
     Truncate text to max length if needed.
     
