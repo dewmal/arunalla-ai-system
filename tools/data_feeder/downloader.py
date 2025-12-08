@@ -80,7 +80,7 @@ def get_folder_name(folder_id):
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=30)
         
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')

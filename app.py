@@ -10,7 +10,7 @@ from PIL import Image, ImageTk  # To display images in Tkinter
 
 # Import downloader functions (Task 2 Integration)
 try:
-    from downloader import download, is_folder_url, download_file, download_folder
+    from tools.data_feeder.downloader import download, is_folder_url, download_file, download_folder
     DOWNLOADER_AVAILABLE = True
 except ImportError:
     DOWNLOADER_AVAILABLE = False
@@ -18,7 +18,7 @@ except ImportError:
 
 # Import full text extractor (Task 1 Integration)
 try:
-    from pdf_extractor import extract_text_from_pdf
+    from tools.data_feeder.pdf_extractor import extract_text_from_pdf
     FULL_EXTRACTOR_AVAILABLE = True
 except ImportError:
     FULL_EXTRACTOR_AVAILABLE = False
